@@ -407,6 +407,12 @@ typedef enum { PlayButton, PauseButton } PlayButtonType;
                                                 adDisplayContainer:self.adDisplayContainer
                                                        userContext:nil];
   [self.adsLoader requestAdsWithRequest:request];
+
+  [self performSelector:@selector(test) withObject:nil afterDelay:10];
+}
+
+- (void)test{
+    AVPlayer *player = [[AVPlayer alloc] initWithURL:[NSURL URLWithString:@"http://kalhlspd-a.akamaihd.net/p/243342/sp/24334200/playManifest/entryId/0_uka1msg4/flavorIds/1_vqhfu6uy,1_80sohj7p/format/applehttp/protocol/http/a.m3u8"]];
 }
 
 // Notify IMA SDK when content is done for post-rolls.
