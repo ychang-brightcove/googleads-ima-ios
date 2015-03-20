@@ -25,7 +25,15 @@ NSString *const kTestAppAdTagUrl =
 }
 
 - (IBAction)onPlayButtonTouch:(id)sender {
-  [self requestAds];
+
+     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
+        [self requestAds];
+        
+     });
+
+    [self.contentPlayer play];
+
   self.playButton.hidden = YES;
 }
 
@@ -42,6 +50,13 @@ NSString *const kTestAppAdTagUrl =
   // Size, position, and display the AVPlayer.
   playerLayer.frame = self.videoView.layer.bounds;
   [self.videoView.layer addSublayer:playerLayer];
+
+
+    [self.contentPlayer addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(.25, 600) queue:NULL usingBlock:^(CMTime time) {
+
+        CMTimeShow(time);
+
+    }];
 }
 
 #pragma mark SDK Setup
@@ -95,10 +110,9 @@ NSString *const kTestAppAdTagUrl =
   // Create ads rendering settings to tell the SDK to use the in-app browser.
   [self createAdsRenderingSettings];
   // Create a content playhead so the SDK can track our content for VMAP and ad rules.
-  [self createContentPlayhead];
+  //[self createContentPlayhead];
   // Initialize the ads manager.
-  [self.adsManager initializeWithContentPlayhead:self.contentPlayhead
-                            adsRenderingSettings:self.adsRenderingSettings];
+  [self.adsManager initializeWithContentPlayhead:self.contentPlayhead adsRenderingSettings:self.adsRenderingSettings];
 }
 
 - (void)adsLoader:(IMAAdsLoader *)loader failedWithErrorData:(IMAAdLoadingErrorData *)adErrorData {
@@ -114,6 +128,10 @@ NSString *const kTestAppAdTagUrl =
   // When the SDK notified us that ads have been loaded, play them.
   if (event.type == kIMAAdEvent_LOADED) {
     [adsManager start];
+  } else if (event.type == kIMAAdEvent_STARTED) {
+      NSLog(@"Start");
+  } else if (event.type == kIMAAdEvent_COMPLETE) {
+      NSLog(@"Complete");
   }
 }
 
