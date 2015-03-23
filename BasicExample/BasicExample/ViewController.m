@@ -19,6 +19,8 @@ NSString *const kTestAppAdTagUrl =
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+    NSLog(@"Ads Version: `%@`", [IMAAdsLoader sdkVersion]);
+
   self.playButton.layer.zPosition = MAXFLOAT;
 
   [self setUpContentPlayer];
