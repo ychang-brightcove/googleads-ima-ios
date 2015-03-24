@@ -28,11 +28,17 @@ NSString *const kTestAppAdTagUrl =
 
 - (IBAction)onPlayButtonTouch:(id)sender {
 
-     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
-        [self requestAds];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
-     });
+        [self requestAds:kTestAppAdTagUrl];
+        
+    });
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(90 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        [self requestAds:kTestAppAdTagUrl];
+        
+    });
 
     [self.contentPlayer play];
 
@@ -64,23 +70,33 @@ NSString *const kTestAppAdTagUrl =
 #pragma mark SDK Setup
 
 - (void)setupAdsLoader {
-  self.adsLoader = [[IMAAdsLoader alloc] initWithSettings:nil];
-  self.adsLoader.delegate = self;
+    
+    // Reuse ads loader if it already exists.
+    if (self.adsLoader == nil) {
+        self.adsLoader = [[IMAAdsLoader alloc] initWithSettings:nil];
+        self.adsLoader.delegate = self;
+    }
+    
 }
 
 - (void)setUpAdDisplayContainer {
-  // Create our AdDisplayContainer. Initialize it with our videoView as the container. This
-  // will result in ads being displayed over our content video.
-  self.adDisplayContainer =
-      [[IMAAdDisplayContainer alloc] initWithAdContainer:self.videoView companionSlots:nil];
+    
+    // Create our AdDisplayContainer. Initialize it with our videoView as the container. This
+    // will result in ads being displayed over our content video.
+    // Reuse ad display container if it already exists.
+    if (self.adDisplayContainer == nil) {
+        self.adDisplayContainer =
+        [[IMAAdDisplayContainer alloc] initWithAdContainer:self.videoView companionSlots:nil];
+    }
+    
 }
 
-- (void)requestAds {
+- (void)requestAds:(NSString *)adtag {
   [self setupAdsLoader];
   [self setUpAdDisplayContainer];
   // Create an ad request with our ad tag, display container, and optional user context.
   IMAAdsRequest *request =
-      [[IMAAdsRequest alloc] initWithAdTagUrl:kTestAppAdTagUrl
+      [[IMAAdsRequest alloc] initWithAdTagUrl:adtag
                            adDisplayContainer:self.adDisplayContainer
                                   userContext:nil];
   [self.adsLoader requestAdsWithRequest:request];
